@@ -23,17 +23,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
-    - name: Ensure package-lock.json exists
+    - name: Generate lock file if missing
       run: |
         if (!(Test-Path -Path "package-lock.json")) {
-          Write-Host "package-lock.json not found, creating..."
+          Write-Host "package-lock.json not found, generating with npm install..."
           npm install
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add package-lock.json
-          git commit -m "chore: Add missing package-lock.json" || exit 0
         } else {
-          Write-Host "package-lock.json found, continuing..."
+          Write-Host "package-lock.json already present"
         }
       shell: pwsh
 
