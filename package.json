@@ -12,7 +12,7 @@
   },
   "build": {
     "appId": "com.thesnipe789hd.Tesdt",
-    "productName": "Tesdt",
+    "productName": "My Minecraft Launcher",
     "directories": {
       "output": "dist"
     },
