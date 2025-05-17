@@ -8,11 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
         node-version: [18.x]
     
     steps:
@@ -24,18 +23,19 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         
-    - name: Check for package-lock.json
+    - name: Ensure package-lock.json exists
       run: |
-        if [ ! -f package-lock.json ]; then
-          echo "package-lock.json not found, creating..."
+        if (!(Test-Path -Path "package-lock.json")) {
+          Write-Host "package-lock.json not found, creating..."
           npm install
-          git add package-lock.json
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git commit -m "chore: Add missing package-lock.json" || true
-        else
-          echo "package-lock.json found, continuing..."
-        fi
+          git add package-lock.json
+          git commit -m "chore: Add missing package-lock.json" || exit 0
+        } else {
+          Write-Host "package-lock.json found, continuing..."
+        }
+      shell: pwsh
 
     - name: Install dependencies
       run: npm ci
@@ -46,7 +46,6 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: launcher-${{ matrix.os }}
+        name: launcher-windows
         path: dist/
         retention-days: 5
-        
